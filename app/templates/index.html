@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compliance Gap Analyzer API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .endpoints {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Compliance Gap Analyzer API</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3>API Documentation</h3>
+            </div>
+            <div class="card-body">
+                <p>This API allows you to analyze compliance gaps in your projects.</p>
+                
+                <div class="endpoints">
+                    <h4>Endpoints:</h4>
+                    <ul>
+                        <li><code>GET /api/projects</code> - List all Jira projects</li>
+                        <li><code>POST /api/analyze</code> - Trigger a compliance gap analysis</li>
+                        <li><code>GET /api/results/{project_key}</code> - Get analysis results for a project</li>
+                        <li><code>POST /api/upload-document</code> - Upload a document for analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3>Test Analysis</h3>
+            </div>
+            <div class="card-body">
+                <form id="analyzeForm">
+                    <div class="mb-3">
+                        <label for="projectKey" class="form-label">Project Key</label>
+                        <select class="form-select" id="projectKey">
+                            <option value="">Select a project</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Analysis Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="analysisType" id="typeJira" value="jira">
+                            <label class="form-check-label" for="typeJira">
+                                Jira Tasks
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="analysisType" id="typeDocument" value="document">
+                            <label class="form-check-label" for="typeDocument">
+                                Documents
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="analysisType" id="typeComprehensive" value="comprehensive" checked>
+                            <label class="form-check-label" for="typeComprehensive">
+                                Comprehensive
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Start Analysis</button>
+                </form>
+                
+                <div id="result" class="mt-3"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3>Upload Document</h3>
+            </div>
+            <div class="card-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="uploadProjectKey" class="form-label">Project Key</label>
+                        <select class="form-select" id="uploadProjectKey">
+                            <option value="">Select a project</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Document</label>
+                        <input class="form-control" type="file" id="file" name="file">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Upload and Analyze</button>
+                </form>
+                
+                <div id="uploadResult" class="mt-3"></div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-secondary">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Load projects
+        fetch('/api/projects')
+            .then(response => response.json())
+            .then(data => {
+                const projectKeys = document.querySelectorAll('#projectKey, #uploadProjectKey');
+                
+                projectKeys.forEach(select => {
+                    data.projects.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.key;
+                        option.textContent = `${project.name} (${project.key})`;
+                        select.appendChild(option);
+                    });
+                });
+            })
+            .catch(error => console.error('Error loading projects:', error));
+        
+        // Handle analysis form
+        document.getElementById('analyzeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const projectKey = document.getElementById('projectKey').value;
+            if (!projectKey) {
+                alert('Please select a project');
+                return;
+            }
+            
+            const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="alert alert-info">Analysis started, this may take several minutes...</div>';
+            
+            fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    project_key: projectKey,
+                    analysis_type: analysisType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `<div class="alert alert-success">
+                    <h5>Analysis Started!</h5>
+                    <p>Project: ${projectKey}</p>
+                    <p>Analysis Type: ${analysisType}</p>
+                    <p>The analysis is running in the background. You can check results in the dashboard when complete.</p>
+                </div>`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            });
+        });
+        
+        // Handle upload form
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const projectKey = document.getElementById('uploadProjectKey').value;
+            if (!projectKey) {
+                alert('Please select a project');
+                return;
+            }
+            
+            const fileInput = document.getElementById('file');
+            if (!fileInput.files.length) {
+                alert('Please select a file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('project_key', projectKey);
+            
+            const resultDiv = document.getElementById('uploadResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">Uploading and analyzing document...</div>';
+            
+            fetch('/api/upload-document', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `<div class="alert alert-success">
+                    <h5>Document Analyzed!</h5>
+                    <p>Project: ${projectKey}</p>
+                    <p>Results Count: ${data.results_count}</p>
+                    <p>You can view the detailed results in the dashboard.</p>
+                </div>`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Core dependencies
+langchain==0.0.267
+sentence-transformers==2.2.2
+faiss-cpu==1.7.4
+pymongo==4.5.0
+pydantic==1.10.8
+python-dotenv==1.0.0
+
+# Document processing
+unstructured==0.10.16
+pypdf==3.15.1
+python-docx==0.8.11
+html2text==2020.1.16
+beautifulsoup4==4.12.2
+
+# LLM providers
+requests==2.31.0
+huggingface-hub==0.16.4
+transformers==4.33.2
+torch==2.0.1
+
+# API and Dashboard
+flask==2.3.3
+dash==2.13.0
+dash-bootstrap-components==1.4.2
+plotly==5.17.0
+pandas==2.1.0
+
+# Jira integration
+requests==2.31.0
+atlassian-python-api==3.38.0
+
+# Utilities
+python-dateutil==2.8.2
+tqdm==4.66.1

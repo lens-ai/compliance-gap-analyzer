@@ -1,0 +1,70 @@
+/* Dashboard styling */
+.score-display {
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.big-number {
+    font-size: 36px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.score-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 5px auto 0;
+}
+
+.score-indicator.green {
+    background-color: #4CAF50;
+}
+
+.score-indicator.yellow {
+    background-color: #FFEB3B;
+}
+
+.score-indicator.red {
+    background-color: #F44336;
+}
+
+/* Make tables more readable */
+.dash-table-container table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.dash-table-container th, 
+.dash-table-container td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dash-table-container th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: left;
+}
+
+/* Improve dropdown styling */
+.Select-control {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.Select-placeholder,
+.Select--single > .Select-control .Select-value {
+    padding: 8px 12px;
+}

@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - compliance-network
+
+  compliance-analyzer-api:
+    build: .
+    command: python app/main.py --api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+      - ./vector_store:/app/vector_store
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - mongodb
+    networks:
+      - compliance-network
+
+  compliance-analyzer-dashboard:
+    build: .
+    command: python app/main.py --dashboard
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+      - ./vector_store:/app/vector_store
+    environment:
+      - MONGODB_URI_MASTER=mongodb+srv://vsnmtej:UQGBFY9SMw7p2v9q@cluster0.d4ilbzo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - MONGODB_URI_LOCAL=mongodb://mongodb:27017/
+      - MONGODB_DB_MASTER=lensai_test
+      - MONGODB_DB_LOCAL=compliance_gap_analysis
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - mongodb
+    networks:
+      - compliance-network
+
+networks:
+  compliance-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

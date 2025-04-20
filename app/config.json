@@ -1,0 +1,32 @@
+{
+    "mongodb_uri": {
+        "master": "mongodb+srv://username:password@your-atlas-cluster.mongodb.net/",
+        "local": "mongodb://localhost:27017/"
+    },
+    "mongodb_db": {
+        "master": "lensai_test",
+        "local": "compliance_gap_analysis"
+    },
+    "jira": {
+        "base_url": "https://your-domain.atlassian.net",
+        "email": "your-email@example.com",
+        "api_token": "your-api-token"
+    },
+    "llm": {
+        "api_type": "deepseek",
+        "api_url": "https://api.deepseek.ai/v1/chat/completions",
+        "model_name": "deepseek-chat",
+        "api_key": "your-deepseek-api-key",
+        "temperature": 0.2
+    },
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "compliance_db_path": "data/compliance_db.json",
+    "document_templates_path": "data/templates",
+    "vector_store_dir": "vector_store",
+    "log_file": "logs/compliance_gap.log",
+    "confluence": {
+        "base_url": "https://your-domain.atlassian.net/wiki",
+        "username": "your-email@example.com",
+        "api_token": "your-api-token"
+    }
+}
